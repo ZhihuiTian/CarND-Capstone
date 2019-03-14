@@ -117,3 +117,5 @@ dmypy.json
 .pyre/
 
 .vscode/
+test.py
+frozen_inference_graph.pb

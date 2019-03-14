@@ -24,6 +24,9 @@ class TLDetector(object):
         self.camera_image = None
         self.lights = []
 
+        self.waypoints_2d = None
+        self.waypoints_tree = None
+
         sub1 = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         sub2 = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
@@ -45,16 +48,13 @@ class TLDetector(object):
             '/traffic_waypoint', Int32, queue_size=1)
 
         self.bridge = CvBridge()
-        self.light_classifier = TLClassifier()
+        self.light_classifier = TLClassifier(self.config['is_site'])
         self.listener = tf.TransformListener()
 
         self.state = TrafficLight.UNKNOWN
         self.last_state = TrafficLight.UNKNOWN
         self.last_wp = -1
         self.state_count = 0
-
-        self.waypoints_2d = None
-        self.waypoints_tree = None
 
         rospy.spin()
 
@@ -133,6 +133,8 @@ class TLDetector(object):
 
         # Get classification
         return self.light_classifier.get_classification(cv_image)
+        # for test
+        # return light.state
 
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
